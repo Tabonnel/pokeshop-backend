@@ -19,7 +19,7 @@ const calculateOrderAmount = async (items) => {
         const pokemon = await Pokemon.findById(item.id);
         // console.log(pokemon.price);
         // console.log(item.quantity);
-        pokemonPrice += pokemon.price * item.quantity;
+        pokemonPrice += (pokemon.price * item.quantity)*100;
       })
     );
   
