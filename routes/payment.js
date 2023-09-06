@@ -2,47 +2,49 @@ var express = require("express");
 var router = express.Router();
 const Pokemon = require("../models/pokemons");
 
-// This is your test secret API key.
 const stripe = require("stripe")(
   "sk_test_51NnH79CGeghBSZjO1BLge1VAF5WiZA85QTfPSvsWoLmAD2p7nhDpsIEuYRBAJNGtrq05tq3pkqTHn8jwEC4NNPcr00E93YopJM"
 );
 
-const calculateOrderAmount = async ({ items }) => {
-    let pokemonPrice = 0;
+const calculateOrderAmount = async (items) => {
+    if (!items || !Array.isArray(items)) {
+      // Gérez le cas où items n'est pas défini ou n'est pas un tableau
+      return 0;
+    }
   
+    let pokemonPrice = 0;
     // Utilisez Promise.all pour attendre que toutes les requêtes asynchrones soient terminées
     await Promise.all(
       items.map(async (item) => {
         const pokemon = await Pokemon.findById(item.id);
-        console.log(pokemon.price);
-        console.log(item.quantity);
+        // console.log(pokemon.price);
+        // console.log(item.quantity);
         pokemonPrice += pokemon.price * item.quantity;
       })
     );
   
-    // Retournez le montant total de la commande
+    // Retournez le montant total de la commande comme un nombre
     return pokemonPrice;
   };
   
 
-router.post("/pay", async (req, res) => {
-  const { items } = req.body;
-
-  // Create a PaymentIntent with the order amount and currency
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: calculateOrderAmount(items),
-    currency: "eur",
-    // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
-    automatic_payment_methods: {
-      enabled: true,
-    },
+  router.post("/pay", async function (req, res) { // Ajoutez 'async' ici
+    const { items } = req.body;
+  
+    const orderAmount = await calculateOrderAmount(items); // Ajoutez 'await' ici
+  
+    // Créez un PaymentIntent avec le montant de la commande et la devise
+    const paymentIntent = await stripe.paymentIntents.create({ // Ajoutez 'await' ici
+      amount: orderAmount, // Utilisez la variable orderAmount ici
+      currency: "eur",
+      // Dans la dernière version de l'API, préciser le paramètre `automatic_payment_methods` est facultatif car Stripe active sa fonctionnalité par défaut.
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    });
+  
+    res.send({
+      clientSecret: paymentIntent.client_secret,
+    });
   });
-
-  res.send({
-    clientSecret: paymentIntent.client_secret,
-  });
-});
-
-// router.listen(4242, () => console.log("Node server listening on port 4242!"));
-
 module.exports = router;
