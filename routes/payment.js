@@ -38,9 +38,10 @@ const calculateOrderAmount = async (items) => {
       amount: orderAmount, // Utilisez la variable orderAmount ici
       currency: "eur",
       // Dans la dernière version de l'API, préciser le paramètre `automatic_payment_methods` est facultatif car Stripe active sa fonctionnalité par défaut.
-      automatic_payment_methods: {
-        enabled: true,
-      },
+      // automatic_payment_methods: {
+      //   enabled: true,
+      // },
+      payment_method: 'pm_card_visa',
     });
   
     res.send({

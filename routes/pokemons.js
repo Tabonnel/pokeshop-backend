@@ -28,6 +28,14 @@ router.get('/', function(req, res) {
     });
 });
 
+//route pour récupérer les 150 premiers pokemons
+router.get('/first150', function(req, res) {
+    Pokemon.find().limit(150).then((pokemon) => {
+        res.json(pokemon);
+        console.log(pokemon);
+    });
+});
+
 //route pour récupérer un product par son id
 router.get('/:id', function(req, res) {
     Pokemon.findById(req.params.id).then((pokemon) => {
