@@ -1,8 +1,9 @@
 
 const mongoose = require('mongoose');
+require('dotenv').config();
 
-const connectionString = "mongodb+srv://abonnelt:126942@cluster0.vhbd6kl.mongodb.net/pokeshop";
+const MONGO_DB = process.env.MONGO_DB;
 
-mongoose.connect(connectionString, { connectTimeoutMS: 2000 })
+mongoose.connect(MONGO_DB, { connectTimeoutMS: 2000 })
  .then(() => console.log('Database connected'))
  .catch((errorMessage) => console.error(errorMessage))

@@ -3,7 +3,7 @@ var router = express.Router();
 const Pokemon = require("../models/pokemons");
 
 const stripe = require("stripe")(
-  "sk_test_51NnH79CGeghBSZjO1BLge1VAF5WiZA85QTfPSvsWoLmAD2p7nhDpsIEuYRBAJNGtrq05tq3pkqTHn8jwEC4NNPcr00E93YopJM"
+  process.env.STRIPE
 );
 
 const calculateOrderAmount = async (items) => {
